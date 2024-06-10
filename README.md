@@ -26,4 +26,4 @@ To run the app locally follow these steps:
 To run the app in docker, follow these steps:
 
 1. docker build -t discordbot .
-2. docker run -d --name <name> --env-file <env file> discordbot 
+2. docker run -d --name {name} --env-file {env file} discordbot 
