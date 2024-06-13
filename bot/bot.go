@@ -42,4 +42,9 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	// if m.content contains botid (Mentions) and "ping" then send "pong!"
+	if m.Content == "<@"+BotId+"> ping" || m.Content == os.Getenv("BOT_PREFIX")+"ping" {
+		_, _ = s.ChannelMessageSend(m.ChannelID, "pong!")
+	}
+
 }

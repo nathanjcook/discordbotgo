@@ -1,5 +1,5 @@
 # Use image
-FROM golang:1.22.3
+FROM golang:1-alpine as build
 # Create working directory 
 WORKDIR /app
 # Copy files to working directory
@@ -10,6 +10,13 @@ RUN go mod download
 COPY . .
 # Create executable
 RUN go build -o main .
+
+# Use image
+FROM alpine:latest
+# Create working directory
+WORKDIR /app
+# Copy built app
+COPY --from=build /app/main /app/main
 # Allow connections on 8080
 EXPOSE 8080
 # Run executable 
