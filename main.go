@@ -21,6 +21,4 @@ func init() {
 func main() {
 
 	bot.Start()
-
-	<-make(chan struct{})
 }
