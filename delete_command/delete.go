@@ -11,17 +11,20 @@ type Microservice struct {
 	MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
 }
 
-func Delete(name string) string {
+func Delete(name string) (string, string) {
 	var query Microservice
 	var msg string
+	var ttl string
 
 	result := dbconfig.DB.Where("microservice_name = ?", name).Find(&query)
 	if result.RowsAffected > 0 {
 		dbconfig.DB.Where("microservice_name = ?", name).Delete(&Microservice{})
+		ttl = "Delete Command"
 		msg = "Microservice: " + name + " Has Been Deleted"
-		return msg
+		return ttl, msg
 	} else {
+		ttl = "Delete Command Error"
 		msg = "Bot Name Does Not Exist"
-		return msg
+		return ttl, msg
 	}
 }
