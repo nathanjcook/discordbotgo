@@ -111,6 +111,33 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 			}
 		}
+
+		if cmdsplit[1] == "help" {
+			if len(cmdsplit) > 2 {
+				_, _ = s.ChannelMessageSend(m.ChannelID, "Invalid Amount Of Args Provided")
+			} else {
+				embedAdd := discordgo.MessageEmbed{
+					Title:       commands.AddTitle,
+					Description: commands.AddMsg,
+				}
+				embedDelete := discordgo.MessageEmbed{
+					Title:       commands.DeleteTitle,
+					Description: commands.DeleteMsg,
+				}
+				embedInfo := discordgo.MessageEmbed{
+					Title:       commands.InfoTitle,
+					Description: commands.InfoMsg,
+				}
+				embedMicro := discordgo.MessageEmbed{
+					Title:       commands.MicroserviceTitle,
+					Description: commands.MicroserviceMsg,
+				}
+				_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embedAdd)
+				_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embedDelete)
+				_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embedInfo)
+				_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embedMicro)
+			}
+		}
 	}
 }
 
