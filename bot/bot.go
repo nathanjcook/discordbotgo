@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	addcommand "github.com/nathanjcook/discordbotgo/add_command"
 )
 
 var BotId string
@@ -43,8 +45,25 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	// if m.content contains botid (Mentions) and "ping" then send "pong!"
-	if m.Content == "<@"+BotId+"> ping" || m.Content == os.Getenv("BOT_PREFIX")+"ping" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "pong!")
-	}
+	if strings.Contains(m.Content, os.Getenv("BOT_PREFIX")) {
+		cmdsplit := strings.Split(m.Content, " ")
+		fmt.Println(cmdsplit)
 
+		if cmdsplit[1] == "add" {
+			p, err := s.UserChannelPermissions(m.Author.ID, m.ChannelID)
+			if err != nil {
+				_, _ = s.ChannelMessageSend(m.ChannelID, "Error Running Command")
+				panic(err)
+			}
+			if len(cmdsplit) < 5 {
+				_, _ = s.ChannelMessageSend(m.ChannelID, "Invalid Amount Of Args Provided")
+			} else {
+				if p&discordgo.PermissionAdministrator == discordgo.PermissionAdministrator {
+					_, _ = s.ChannelMessageSend(m.ChannelID, addcommand.Add(cmdsplit[2], cmdsplit[3], cmdsplit[4]))
+				} else {
+					_, _ = s.ChannelMessageSend(m.ChannelID, "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added")
+				}
+			}
+		}
+	}
 }
