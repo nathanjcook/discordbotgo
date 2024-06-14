@@ -9,8 +9,7 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-	addcommand "github.com/nathanjcook/discordbotgo/add_command"
-	deletecommand "github.com/nathanjcook/discordbotgo/delete_command"
+	"github.com/nathanjcook/discordbotgo/bot/commands"
 	"github.com/servusdei2018/shards"
 )
 
@@ -89,7 +88,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				_, _ = s.ChannelMessageSend(m.ChannelID, "Invalid Amount Of Args Provided")
 			} else {
 				if p&discordgo.PermissionAdministrator == discordgo.PermissionAdministrator {
-					_, _ = s.ChannelMessageSend(m.ChannelID, addcommand.Add(cmdsplit[2], cmdsplit[3], cmdsplit[4]))
+					_, _ = s.ChannelMessageSend(m.ChannelID, commands.Add(cmdsplit[2], cmdsplit[3], cmdsplit[4]))
 				} else {
 					_, _ = s.ChannelMessageSend(m.ChannelID, "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added")
 				}
@@ -106,7 +105,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				_, _ = s.ChannelMessageSend(m.ChannelID, "Invalid Amount Of Args Provided")
 			} else {
 				if p&discordgo.PermissionAdministrator == discordgo.PermissionAdministrator {
-					_, _ = s.ChannelMessageSend(m.ChannelID, deletecommand.Delete(cmdsplit[2]))
+					_, _ = s.ChannelMessageSend(m.ChannelID, commands.Delete(cmdsplit[2]))
 				} else {
 					_, _ = s.ChannelMessageSend(m.ChannelID, "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added")
 				}
