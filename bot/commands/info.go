@@ -1,29 +1,29 @@
 package commands
 
 import (
+	"fmt"
+
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
 )
 
-func Delete(name string) (string, string) {
+func Info() (string, string) {
 	type Microservice struct {
 		MicroserviceId      int    `gorm:"column:microservice_id;unique;primaryKey;autoIncrement"`
 		MicroserviceName    string `gorm:"column:microservice_name;size:25;"`
 		MicroserviceUrl     string `gorm:"column:microservice_url;"`
 		MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
 	}
-	var query Microservice
-	var msg string
-	var title string
-
-	result := dbconfig.DB.Where("microservice_name = ?", name).Find(&query)
-	if result.RowsAffected > 0 {
-		dbconfig.DB.Where("microservice_name = ?", name).Delete(&Microservice{})
-		title = "Delete Command"
-		msg = "Microservice: " + name + " Has Been Deleted"
+	var names []string
+	msg := ""
+	title := "Info Command"
+	dbconfig.DB.Model(&Microservice{}).Pluck("microservice_name", &names)
+	if len(names) > 0 {
+		for i := 0; i < len(names); i++ {
+			msg += "!gobot " + names[i] + " help\n\n"
+			fmt.Println(names[i])
+		}
 		return title, msg
 	} else {
-		title = "Delete Command Error"
-		msg = "Bot Name Does Not Exist"
-		return title, msg
+		return title, "No Microservices Available"
 	}
 }
