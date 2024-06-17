@@ -87,7 +87,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				panic(err)
 			}
 			if len(cmdsplit) < 5 || len(cmdsplit) > 6 {
-				title = "Delete Command Error"
+				title = "Add Command Error"
 				msg = "Invalid Amount Of Args Provided"
 			} else {
 				if p&discordgo.PermissionAdministrator != 0 {

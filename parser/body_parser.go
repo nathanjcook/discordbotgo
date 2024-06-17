@@ -9,6 +9,10 @@ import (
 
 func Body_Parse() {
 	var body_interface []interface{}
+
+	var txt string
+	var msg string
+
 	input := "'text_without_key_test' -input_key 'text_with_key_test' 'array_test1, array_test2, array_test3' -array_key 'array_test4, array_test5, array_test6'"
 
 	r := regexp.MustCompile(`('[^']+'|\S+)`)
@@ -16,7 +20,13 @@ func Body_Parse() {
 
 	for i := 0; i < len(inputs); i++ {
 
-		if strings.HasPrefix(inputs[i], "-") && i+1 < len(inputs) {
+		if strings.HasPrefix(inputs[i], "-") {
+			if i+1 >= len(inputs) {
+				txt = "Pre Microservice JSON Body Error"
+				msg = "Invalid JSON: JSON Cannot End With The Key And Only The Key"
+				fmt.Println(txt + "\n" + msg)
+				return
+			}
 
 			key := strings.TrimPrefix(inputs[i], "-")
 			value := inputs[i+1]
