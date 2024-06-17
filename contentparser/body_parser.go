@@ -1,4 +1,4 @@
-package parser
+package contentparser
 
 import (
 	"encoding/json"
@@ -7,13 +7,11 @@ import (
 	"strings"
 )
 
-func Body_Parse() {
+func Body_Parser(input string) []byte {
 	var body_interface []interface{}
 
 	var txt string
 	var msg string
-
-	input := "'text_without_key_test' -input_key 'text_with_key_test' 'array_test1, array_test2, array_test3' -array_key 'array_test4, array_test5, array_test6'"
 
 	r := regexp.MustCompile(`('[^']+'|\S+)`)
 	inputs := r.FindAllString(input, -1)
@@ -25,7 +23,6 @@ func Body_Parse() {
 				txt = "Pre Microservice JSON Body Error"
 				msg = "Invalid JSON: JSON Cannot End With The Key And Only The Key"
 				fmt.Println(txt + "\n" + msg)
-				return
 			}
 
 			key := strings.TrimPrefix(inputs[i], "-")
@@ -42,28 +39,13 @@ func Body_Parse() {
 
 			}
 			i++
-		} else {
-
-			if strings.Contains(inputs[i], "'") && strings.Contains(inputs[i], ",") {
-
-				body_list := strings.Split(strings.Trim(inputs[i], "'"), ", ")
-				body_interface = append(body_interface, body_list)
-
-			} else {
-
-				body_interface = append(body_interface, inputs[i])
-
-			}
 		}
 	}
-
 	full_body := map[string]interface{}{"body": body_interface}
-	full_body_json, err := json.Marshal(full_body)
 
+	full_body_json, err := json.Marshal(full_body)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return
 	}
-
-	fmt.Println(string(full_body_json))
+	return full_body_json
 }

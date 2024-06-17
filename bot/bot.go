@@ -1,8 +1,11 @@
 package bot
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -10,6 +13,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nathanjcook/discordbotgo/bot/commands"
+	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"github.com/nathanjcook/discordbotgo/contentparser"
 	"github.com/servusdei2018/shards"
 )
 
@@ -169,7 +174,58 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 			_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embed)
 		} else {
-			//Microservice
+			type Microservice struct {
+				MicroserviceId      int    `gorm:"column:microservice_id;unique;primaryKey;autoIncrement"`
+				MicroserviceName    string `gorm:"column:microservice_name;size:25;"`
+				MicroserviceUrl     string `gorm:"column:microservice_url;"`
+				MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
+			}
+
+			var query Microservice
+
+			if len(cmdsplit) < 3 {
+				title = "Microservice Command Error"
+				msg = "Invalid Amount Of Args Provided"
+			} else {
+				fmt.Println(string(cmdsplit[1]))
+				host := dbconfig.DB.Table("microservices").Where("microservice_name = ?", string(cmdsplit[1])).Scan(&query)
+				if host.RowsAffected > 0 {
+					if host.RowsAffected > 0 {
+						body := bytes.NewBuffer(contentparser.Body_Parser(m.Content))
+
+						urls := (query.MicroserviceUrl + "/api/" + cmdsplit[2])
+
+						resp, err := http.Post(urls, "application/json", body)
+						if err != nil {
+							fmt.Println("Err Placeholder")
+						} else {
+							if resp.StatusCode == 404 {
+								title = cmdsplit[1] + "error"
+								msg = "Endpoint Not Found"
+							} else {
+								defer resp.Body.Close()
+
+								body, err := io.ReadAll(resp.Body)
+								if err != nil {
+									fmt.Println("Err Placeholder")
+								} else {
+									title = cmdsplit[1]
+									msg = string(body)
+								}
+							}
+
+						}
+					}
+				} else {
+					title = "Microservice Command Error"
+					msg = "Microservice Name Does Not Exist"
+				}
+			}
+			embed := discordgo.MessageEmbed{
+				Title:       title,
+				Description: msg,
+			}
+			_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embed)
 		}
 	}
 }
