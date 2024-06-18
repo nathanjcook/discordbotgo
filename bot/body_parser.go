@@ -1,4 +1,4 @@
-package contentparser
+package bot
 
 import (
 	"encoding/json"

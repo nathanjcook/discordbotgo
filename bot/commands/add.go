@@ -2,11 +2,11 @@ package commands
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
 )
 
 func Add(name string, url string, timeout string) (string, string) {
@@ -27,13 +27,12 @@ func Add(name string, url string, timeout string) (string, string) {
 	} else {
 		body := new(bytes.Buffer)
 		urls := (url + "/api/help")
-		fmt.Println(urls)
 		resp, err := http.Post(urls, "application/json", body)
 
 		if err != nil {
 			title = "Add Command Error"
 			msg = "Error Connecting To Microservice:"
-			fmt.Println(err)
+			zap.L().Error("Error", zap.Error(err))
 			return title, msg
 		} else {
 			if resp.StatusCode < 400 {

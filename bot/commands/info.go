@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
 )
 
@@ -20,7 +18,6 @@ func Info() (string, string) {
 	if len(names) > 0 {
 		for i := 0; i < len(names); i++ {
 			msg += "!gobot " + names[i] + " help\n\n"
-			fmt.Println(names[i])
 		}
 		return title, msg
 	} else {
