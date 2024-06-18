@@ -16,6 +16,7 @@ import (
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
 	"github.com/nathanjcook/discordbotgo/contentparser"
 	"github.com/servusdei2018/shards"
+	"go.uber.org/zap"
 )
 
 var Mgr *shards.Manager
@@ -26,7 +27,6 @@ func Start() {
 
 	// Create a new shard manager using the provided bot token.
 	Mgr, err = shards.New("Bot " + os.Getenv("BOT_TOKEN"))
-	fmt.Println(err)
 	if err != nil {
 		log.Fatal("[ERROR] Error creating manager,", err)
 		return
@@ -82,7 +82,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.Contains(m.Content, os.Getenv("BOT_PREFIX")) {
 		cmdsplit := strings.Split(m.Content, " ")
-		fmt.Println(cmdsplit)
 
 		if cmdsplit[1] == "add" {
 			p, err := s.UserChannelPermissions(m.Author.ID, m.ChannelID)
@@ -187,7 +186,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				title = "Microservice Command Error"
 				msg = "Invalid Amount Of Args Provided"
 			} else {
-				fmt.Println(string(cmdsplit[1]))
 				host := dbconfig.DB.Table("microservices").Where("microservice_name = ?", string(cmdsplit[1])).Scan(&query)
 				if host.RowsAffected > 0 {
 					if host.RowsAffected > 0 {
@@ -208,7 +206,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 								body, err := io.ReadAll(resp.Body)
 								if err != nil {
-									fmt.Println("Err Placeholder2")
+									zap.L().Error("Err Placeholder2")
 								} else {
 									title = cmdsplit[1]
 									msg = string(body)

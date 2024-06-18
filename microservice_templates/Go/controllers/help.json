@@ -1,0 +1,12 @@
+[
+    {
+        "command": "imCalledThis",
+        "info": "whatIDo",
+        "usage": "howToUseMe"
+    },
+    {
+        "command": "imCalledThis",
+        "info": "whatIDo",
+        "usage": "howToUseMe"
+    }
+]

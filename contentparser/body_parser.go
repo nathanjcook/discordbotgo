@@ -2,9 +2,10 @@ package contentparser
 
 import (
 	"encoding/json"
-	"fmt"
 	"regexp"
 	"strings"
+
+	"go.uber.org/zap"
 )
 
 var Key string
@@ -58,9 +59,8 @@ func Body_Parser(input string) []byte {
 	full_body_json, err := json.Marshal(body_map)
 
 	if err != nil {
-		fmt.Println("Error:", err)
+		zap.L().Error("Error:", zap.Error(err))
 	}
-	fmt.Println(string(full_body_json))
 
 	return full_body_json
 }
