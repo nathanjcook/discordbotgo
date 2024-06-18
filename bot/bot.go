@@ -197,7 +197,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 						resp, err := http.Post(urls, "application/json", body)
 						if err != nil {
-							fmt.Println("Err Placeholder")
+							title = cmdsplit[1] + "error"
+							msg = "Error Connecting To Microservice"
 						} else {
 							if resp.StatusCode == 404 {
 								title = cmdsplit[1] + "error"
@@ -207,13 +208,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 								body, err := io.ReadAll(resp.Body)
 								if err != nil {
-									fmt.Println("Err Placeholder")
+									fmt.Println("Err Placeholder2")
 								} else {
 									title = cmdsplit[1]
 									msg = string(body)
 								}
 							}
-
 						}
 					}
 				} else {
