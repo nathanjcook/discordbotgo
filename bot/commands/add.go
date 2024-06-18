@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
 )
 
 func Add(name string, url string, timeout string) string {
@@ -26,6 +27,7 @@ func Add(name string, url string, timeout string) string {
 			microserviceAdd := Microservice{MicroserviceName: name, MicroserviceUrl: url, MicroserviceTimeout: timeout_int}
 			err := dbconfig.DB.Create(&microserviceAdd).Error
 			if err != nil {
+				zap.L().Warn("[WARN]", zap.Error(err))
 				msg = "Error Connecting To Database"
 				return msg
 			} else {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -29,7 +30,7 @@ func Connect() {
 	// Connect to postgres with gorm
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		zap.L().Panic("Error connecting to DB:", zap.Error(err))
 	} else {
 		DB = db
 	}
