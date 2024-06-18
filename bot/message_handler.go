@@ -151,8 +151,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 								if err != nil {
 									zap.L().Error("Err Placeholder2")
 								} else {
+
 									title = cmdsplit[1]
-									msg = string(body)
+									msg = Body_Reader(body)
 								}
 							}
 						}
