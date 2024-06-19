@@ -17,6 +17,7 @@ import (
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	var title string
 	var msg string
+	var needhelp bool
 
 	// check if sender is self, and don't reply if true
 	if m.Author.ID == BotId {
@@ -144,15 +145,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 							if resp.StatusCode == 404 {
 								title = cmdsplit[1] + "error"
 								msg = "Endpoint Not Found"
+								needhelp = true
 							} else {
+
 								defer resp.Body.Close()
 
 								body, err := io.ReadAll(resp.Body)
 								if err != nil {
 									zap.L().Error("Err Placeholder2")
 								} else {
+
 									title = cmdsplit[1]
-									msg = string(body)
+									msg = Body_Reader(body)
 								}
 							}
 						}
@@ -162,10 +166,26 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					msg = "Microservice Name Does Not Exist"
 				}
 			}
+			if needhelp {
+				needhelp = false
+				if cmdsplit[2] == "help" {
+					title = "No Help"
+					msg = "The Microservice " + cmdsplit[1] + "Does Not Have A Help Section! Report This To An Admin"
+				} else {
+					title = "No Endpoint Found"
+					helper, txt := commands.Get_Help((query.MicroserviceUrl + "/api/help"))
+					if txt != "" {
+						msg = txt
+					} else {
+						msg = Body_Reader(helper)
+					}
+				}
+			}
 			embed := discordgo.MessageEmbed{
 				Title:       title,
 				Description: msg,
 			}
+
 			_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embed)
 		}
 	}

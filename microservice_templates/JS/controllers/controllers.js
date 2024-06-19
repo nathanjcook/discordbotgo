@@ -6,7 +6,7 @@ const getHelp =  async (req, res) => {
     try {
         res.status(200).json(help);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json([{"Error": err.message},]);
     }
 };
 
