@@ -110,10 +110,10 @@ func TestAdd_HandlerTooFewValues(t *testing.T) {
 	want_title := "Add Command Error"
 	want_msg := "Invalid Amount Of Args Provided"
 
-	if want_title != msg {
+	if want_title != title {
 		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Few Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
 	}
-	if want_title != msg {
+	if want_msg != msg {
 		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Few Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
 	}
 }
@@ -149,7 +149,7 @@ func TestAdd_HandlerNameTooLarge(t *testing.T) {
 }
 
 func TestAdd_HandlerNameBadUrl(t *testing.T) {
-	cmdsplit := strings.Split("!gobot add aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa nonexist_234232 50", " ")
+	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
 	want_title := "Add Command Error"
