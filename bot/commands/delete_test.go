@@ -42,13 +42,11 @@ func setupTestDBDelete() {
 func TestDeleteMockExist(t *testing.T) {
 	setupTestDBDelete()
 
-	dbconfig.DB.Create(&MicroserviceDelete{
-		MicroserviceName: "existing_service",
-	})
+	Add("testname_1", "http://localhost:8081", "50")
 
-	title, msg := Delete("existing_service")
+	title, msg := Delete("testname_1")
 	title_want := "Delete Command"
-	msg_want := "Microservice: existing_service Has Been Deleted"
+	msg_want := "Microservice: testname_1 Has Been Deleted"
 
 	if title_want != title {
 		t.Errorf("\n\nError: Delete Failed For Existing Microservice:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)

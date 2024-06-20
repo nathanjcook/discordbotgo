@@ -42,42 +42,36 @@ func setupTestDBAdd() {
 func TestAddMSNameAlreadyExists(t *testing.T) {
 	setupTestDBAdd()
 
-	dbconfig.DB.Create(&MicroserviceAdd{
-		MicroserviceName:    "existing_service",
-		MicroserviceUrl:     "http://localhost:3002",
-		MicroserviceTimeout: 70,
-	})
+	Add("existing_service", "http://localhost:8081", "50")
 
-	title, msg := Add("existing_service", "http://localhost:8081", "50")
+	title, msg := Add("existing_service", "http://localhost:3001", "50")
 	title_want := "Add Command Error"
 	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
-	}
-	if msg_want != msg {
+	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+	} else {
+		Delete("existing_service")
 	}
 }
 
 func TestAddMSHostURLAlreadyExists(t *testing.T) {
 	setupTestDBAdd()
 
-	dbconfig.DB.Create(&MicroserviceAdd{
-		MicroserviceName:    "existing_service",
-		MicroserviceUrl:     "http://localhost:3002",
-		MicroserviceTimeout: 70,
-	})
+	Add("test_service", "http://localhost:8081", "50")
 
-	title, msg := Add("New_service", "http://localhost:3002", "50")
+	title, msg := Add("new_service", "http://localhost:8081", "50")
 	title_want := "Add Command Error"
 	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
-	}
-	if msg_want != msg {
+	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+	} else {
+		Delete("test_service")
 	}
 }
 
@@ -85,20 +79,20 @@ func TestAddSuccess(t *testing.T) {
 	setupTestDBAdd()
 
 	dbconfig.DB.Create(&MicroserviceAdd{
-		MicroserviceName:    "existing_service",
-		MicroserviceUrl:     "http://localhost:3002",
+		MicroserviceName:    "testname_5",
+		MicroserviceUrl:     "http://localhost:3007",
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("New_service", "http://localhost:8081", "50")
+	title, msg := Add("New_service_test", "http://localhost:8081", "50")
 	title_want := "Add Command"
-	msg_want := "Microservice: New_service Added To Server"
+	msg_want := "Microservice: New_service_test Added To Server"
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
 	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
 	} else {
-		Delete("New_service")
+		Delete("New_service_test")
 	}
 }
