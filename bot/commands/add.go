@@ -31,7 +31,7 @@ func Add(name string, url string, timeout string) (string, string) {
 
 		if err != nil {
 			title = "Add Command Error"
-			msg = "Error Connecting To Microservice:"
+			msg = "Error Connecting To Microservice"
 			zap.L().Error("Error", zap.Error(err))
 			return title, msg
 		} else {
@@ -42,9 +42,9 @@ func Add(name string, url string, timeout string) (string, string) {
 					msg = "Timeout Is In An Incorrect Format"
 					return title, msg
 				} else {
-					result := dbconfig.DB.Where("microservice_name = ? OR microservice_url = ?", name, url).Find(&query)
-					if result.RowsAffected < 1 {
-						if name != "add" && name != "info" && name != "delete" {
+					if name != "add" && name != "info" && name != "delete" {
+						result := dbconfig.DB.Where("microservice_name = ? OR microservice_url = ?", name, url).Find(&query)
+						if result.RowsAffected < 1 {
 							microserviceAdd := Microservice{MicroserviceName: name, MicroserviceUrl: url, MicroserviceTimeout: timeout_int}
 							err := dbconfig.DB.Create(&microserviceAdd).Error
 							if err != nil {
@@ -58,12 +58,12 @@ func Add(name string, url string, timeout string) (string, string) {
 							}
 						} else {
 							title = "Add Command Error"
-							msg = "Microservice Name Cannot Be The Same As Internal Commandas: add, delete, help, info"
+							msg = "Microservice Name AND Microservice URL Must Be Unique"
 							return title, msg
 						}
 					} else {
 						title = "Add Command Error"
-						msg = "Microservice Name AND Microservice URL Must Be Unique"
+						msg = "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
 						return title, msg
 					}
 				}
