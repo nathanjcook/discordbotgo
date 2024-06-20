@@ -13,14 +13,15 @@ func Info() (string, string) {
 	}
 	var names []string
 	msg := ""
-	title := "Info Command"
 	dbconfig.DB.Model(&Microservice{}).Pluck("microservice_name", &names)
 	if len(names) > 0 {
+		title := "Info Command"
 		for i := 0; i < len(names); i++ {
 			msg += "!gobot " + names[i] + " help\n\n"
 		}
 		return title, msg
 	} else {
+		title := "Info Command Null"
 		return title, "No Microservices Available"
 	}
 }

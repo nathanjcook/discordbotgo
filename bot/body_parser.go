@@ -12,7 +12,8 @@ var Key string
 var Sub_key string
 var Num int
 
-func Body_Parser(input string) []byte {
+func Body_Parser(input string) ([]byte, string) {
+	var str = ""
 	r := regexp.MustCompile(`('[^']+'|\S+)`)
 	inputs := r.FindAllString(input, -1)
 
@@ -21,6 +22,11 @@ func Body_Parser(input string) []byte {
 
 	for i := 0; i < len(inputs); i++ {
 		if strings.HasPrefix(inputs[i], "-") {
+			if i+1 >= len(inputs) {
+				str = "Invalid JSON: JSON Cannot End With The Key And Only The Key"
+				var full_body_json []byte
+				return full_body_json, str
+			}
 			Key = strings.TrimPrefix(inputs[i], "-")
 			Num = i + 1
 
@@ -38,6 +44,11 @@ func Body_Parser(input string) []byte {
 		}
 
 		if strings.HasSuffix(inputs[i], ":") {
+			if i+1 >= len(inputs) {
+				str = "Invalid JSON: JSON Cannot End With The SubKey And Only The SubKey"
+				var full_body_json []byte
+				return full_body_json, str
+			}
 			Sub_key = strings.TrimSuffix(inputs[i], ":")
 			Num = i + 1
 
@@ -62,5 +73,5 @@ func Body_Parser(input string) []byte {
 		zap.L().Error("Error:", zap.Error(err))
 	}
 
-	return full_body_json
+	return full_body_json, str
 }
