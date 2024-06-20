@@ -2,11 +2,13 @@ package bot
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/nathanjcook/discordbotgo/bot/commands"
@@ -164,6 +166,8 @@ func Info_Handler(cmdsplit []string) (string, string) {
 }
 
 func Microservice_Handler(query Microservice, cmdsplit []string, messageContent string) (string, string) {
+	resp_timeout, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(query.MicroserviceTimeout))
+	defer cancel()
 	var title string
 	var msg string
 
@@ -180,13 +184,21 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 		} else {
 			body := bytes.NewBuffer(txt)
 			urls := (query.MicroserviceUrl + "/api/" + cmdsplit[2])
-			resp, err := http.Post(urls, "application/json", body)
+			req, err := http.NewRequestWithContext(resp_timeout, http.MethodPost, urls, body)
+			req.Header.Set("Content-Type", "application/json")
 			if err != nil {
 				title = cmdsplit[1] + "error"
 				msg = "Error Connecting To Microservice"
 				return title, msg
+			}
+			res, err := http.DefaultClient.Do(req)
+			if err != nil {
+				title = cmdsplit[1] + "error"
+				msg = "Timeout"
+				fmt.Println(err)
+				return title, msg
 			} else {
-				if resp.StatusCode == 404 {
+				if res.StatusCode == 404 {
 					if cmdsplit[2] == "help" {
 						title = cmdsplit[1] + " No Help"
 						msg = "The Microservice " + cmdsplit[1] + "Does Not Have A Help Section! Report This To An Admin"
@@ -202,8 +214,8 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 					}
 					return title, msg
 				} else {
-					defer resp.Body.Close()
-					body, err := io.ReadAll(resp.Body)
+					defer res.Body.Close()
+					body, err := io.ReadAll(res.Body)
 
 					if err != nil {
 						title = cmdsplit[1] + "error"

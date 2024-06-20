@@ -1,10 +1,11 @@
 package main
 
 import (
-	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
 )
 
 type Microservice struct {
@@ -16,9 +17,11 @@ type Microservice struct {
 
 func main() {
 	// Find .env file
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+	if os.Getenv("ENV") == "development" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			zap.L().Panic("Error loading .env file:", zap.Error(err))
+		}
 	}
 
 	dbconfig.Connect()

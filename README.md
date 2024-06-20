@@ -20,6 +20,7 @@ To run the app locally follow these steps:
 3. Run the following command:
 
 ```
+   export ENV=development
    go run main.go
 ```
 
