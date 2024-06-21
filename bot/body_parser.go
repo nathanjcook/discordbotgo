@@ -14,7 +14,7 @@ var Num int
 
 func Body_Parser(input string) ([]byte, string) {
 	var str = ""
-	r := regexp.MustCompile(`('[^']+'|\S+)`)
+	r := regexp.MustCompile(`(\[[^\]]+\]|'[^']+'|\S+)`)
 	inputs := r.FindAllString(input, -1)
 
 	body_map := make(map[string]interface{})
@@ -30,10 +30,12 @@ func Body_Parser(input string) ([]byte, string) {
 			Key = strings.TrimPrefix(inputs[i], "-")
 			Num = i + 1
 
-			if Num < len(inputs) && strings.Contains(inputs[Num], ":") {
+			if Num < len(inputs) && strings.HasSuffix(inputs[Num], ":") {
 				sub_map = make(map[string]interface{})
 			} else if Num < len(inputs) {
-				if strings.Contains(inputs[Num], ",") && strings.Contains(inputs[Num], "'") {
+				if strings.HasPrefix(inputs[Num], "[") && strings.HasSuffix(inputs[Num], "]") {
+					body_map[Key] = strings.Trim(inputs[Num], "[]")
+				} else if strings.Contains(inputs[Num], ",") && strings.Contains(inputs[Num], "'") {
 					body_list := strings.Split(strings.Trim(inputs[Num], "'"), ", ")
 					body_map[Key] = body_list
 				} else {
@@ -55,6 +57,8 @@ func Body_Parser(input string) ([]byte, string) {
 			if Num < len(inputs) {
 				if strings.Contains(inputs[Num], "-") {
 					continue
+				} else if strings.HasPrefix(inputs[Num], "[") && strings.HasSuffix(inputs[Num], "]") {
+					sub_map[Sub_key] = strings.Trim(inputs[Num], "[]")
 				} else if strings.Contains(inputs[Num], ",") && strings.Contains(inputs[Num], "'") {
 					body_list := strings.Split(strings.Trim(inputs[Num], "'"), ", ")
 					sub_map[Sub_key] = body_list
@@ -66,7 +70,6 @@ func Body_Parser(input string) ([]byte, string) {
 			body_map[Key] = sub_map
 		}
 	}
-
 	full_body_json, err := json.Marshal(body_map)
 
 	if err != nil {

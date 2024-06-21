@@ -2,26 +2,28 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
+	"github.com/joho/godotenv"
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type MicroserviceDelete struct {
-	MicroserviceId      int    `gorm:"column:microservice_id;unique;primaryKey;autoIncrement"`
-	MicroserviceName    string `gorm:"column:microservice_name;size:25;"`
-	MicroserviceUrl     string `gorm:"column:microservice_url;"`
-	MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
-}
-
 func setupTestDBDelete() {
-	host := "localhost"
-	user := "postgres"
-	password := "thorpe01685"
-	dbname := "discord_db"
-	port := "5433"
+	if os.Getenv("ENV") == "development" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			zap.L().Panic("Error loading .env file:", zap.Error(err))
+		}
+	}
+	host := os.Getenv("POSTGRES_HOST")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("DATABASE_NAME")
+	port := os.Getenv("POSTGRES_PORT")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
 		host,
@@ -36,13 +38,17 @@ func setupTestDBDelete() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&MicroserviceDelete{})
+	db.AutoMigrate(&Microservice{})
 }
 
 func TestDeleteMockExist(t *testing.T) {
 	setupTestDBDelete()
 
-	Add("testname_1", "http://localhost:8081", "50")
+	dbconfig.DB.Create(&Microservice{
+		MicroserviceName:    "testname_1",
+		MicroserviceUrl:     "http://localhost:3007",
+		MicroserviceTimeout: 70,
+	})
 
 	title, msg := Delete("testname_1")
 	title_want := "Delete Command"
