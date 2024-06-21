@@ -2,26 +2,28 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
+	"github.com/joho/godotenv"
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type MicroserviceAdd struct {
-	MicroserviceId      int    `gorm:"column:microservice_id;unique;primaryKey;autoIncrement"`
-	MicroserviceName    string `gorm:"column:microservice_name;size:25;"`
-	MicroserviceUrl     string `gorm:"column:microservice_url;"`
-	MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
-}
-
 func setupTestDBAdd() {
-	host := "localhost"
-	user := "postgres"
-	password := "thorpe01685"
-	dbname := "discord_db"
-	port := "5433"
+	if os.Getenv("ENV") == "development" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			zap.L().Panic("Error loading .env file:", zap.Error(err))
+		}
+	}
+	host := os.Getenv("POSTGRES_HOST")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("DATABASE_NAME")
+	port := os.Getenv("POSTGRES_PORT")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
 		host,
@@ -36,22 +38,28 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&MicroserviceAdd{})
+	db.AutoMigrate(&Microservice{})
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {
 	setupTestDBAdd()
 
-	Add("existing_service", "http://localhost:8081", "50")
+	dbconfig.DB.Create(&Microservice{
+		MicroserviceName:    "existing_service",
+		MicroserviceUrl:     "http://localhost:3007",
+		MicroserviceTimeout: 70,
+	})
 
-	title, msg := Add("existing_service", "http://localhost:3001", "50")
+	title, msg := Add("existing_service", "http://localhost:8081", "50")
 	title_want := "Add Command Error"
 	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
+		Delete("existing_service")
 	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Name That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+		Delete("existing_service")
 	} else {
 		Delete("existing_service")
 	}
@@ -60,7 +68,11 @@ func TestAddMSNameAlreadyExists(t *testing.T) {
 func TestAddMSHostURLAlreadyExists(t *testing.T) {
 	setupTestDBAdd()
 
-	Add("test_service", "http://localhost:8081", "50")
+	dbconfig.DB.Create(&Microservice{
+		MicroserviceName:    "existing_service",
+		MicroserviceUrl:     "http://localhost:8081",
+		MicroserviceTimeout: 70,
+	})
 
 	title, msg := Add("new_service", "http://localhost:8081", "50")
 	title_want := "Add Command Error"
@@ -68,17 +80,19 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
+		Delete("existing_service")
 	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Prevent User From Adding A Microservice Host URL That Already Exists:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+		Delete("existing_service")
 	} else {
-		Delete("test_service")
+		Delete("existing_service")
 	}
 }
 
 func TestAddSuccess(t *testing.T) {
 	setupTestDBAdd()
 
-	dbconfig.DB.Create(&MicroserviceAdd{
+	dbconfig.DB.Create(&Microservice{
 		MicroserviceName:    "testname_5",
 		MicroserviceUrl:     "http://localhost:3007",
 		MicroserviceTimeout: 70,
@@ -90,9 +104,14 @@ func TestAddSuccess(t *testing.T) {
 
 	if title_want != title {
 		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", title_want, title)
+		Delete("testname_5")
+		Delete("New_service_test")
 	} else if msg_want != msg {
 		t.Errorf("\n\nError: Failed To Add To Database Even If All Conditions Met:\nWhat We Wanted: %q\nWhat We Got: %q", msg_want, msg)
+		Delete("testname_5")
+		Delete("New_service_test")
 	} else {
+		Delete("testname_5")
 		Delete("New_service_test")
 	}
 }

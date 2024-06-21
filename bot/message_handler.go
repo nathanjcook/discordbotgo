@@ -24,6 +24,8 @@ type Microservice struct {
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	var message string
+	var help_message string
 	var title string
 	var msg string
 	var is_help bool
@@ -48,54 +50,35 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		if cmdsplit[1] == "add" {
 			title, msg = Add_Handler(int(adminCheck), cmdsplit)
+			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
 
 		} else if cmdsplit[1] == "delete" {
 			title, msg = Delete_Handler(int(adminCheck), cmdsplit)
+			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
 
 		} else if cmdsplit[1] == "help" {
 			title, msg, is_help = Help_Handler(cmdsplit)
+			message = "<@" + m.Author.ID + ">" + " " + title + ": " + msg
+			help_message = "<@" + m.Author.ID + ">" + " HELP!!!" + commands.AddTitle + commands.AddMsg + commands.DeleteTitle + commands.DeleteMsg + commands.InfoTitle + commands.InfoMsg + commands.MicroserviceTitle + commands.MicroserviceMsg
 
 		} else if cmdsplit[1] == "info" {
 			title, msg = Info_Handler(cmdsplit)
-
+			message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
 		} else {
 			host := dbconfig.DB.Table("microservices").Where("microservice_name = ?", string(cmdsplit[1])).Scan(&query)
-			if host.RowsAffected < 0 {
-				title = "Microservice Command Error"
-				msg = "Microservice Name Does Not Exist"
+			if host.RowsAffected < 1 {
+				titles, msg := commands.Info()
+				title = "Microservice " + cmdsplit[1] + " Does Not Exist"
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + "***" + titles + "***\n" + msg
 			} else {
 				title, msg = Microservice_Handler(query, cmdsplit, messageContent)
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
 			}
 		}
 		if is_help {
-			embed := discordgo.MessageEmbed{
-				Title: "Help!!!",
-				Fields: []*discordgo.MessageEmbedField{
-					{
-						Name:  commands.AddTitle,
-						Value: commands.AddMsg,
-					},
-					{
-						Name:  commands.DeleteTitle,
-						Value: commands.DeleteMsg,
-					},
-					{
-						Name:  commands.InfoTitle,
-						Value: commands.InfoMsg,
-					},
-					{
-						Name:  commands.MicroserviceTitle,
-						Value: commands.MicroserviceMsg,
-					},
-				},
-			}
-			_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embed)
+			_, _ = s.ChannelMessageSend(m.ChannelID, help_message)
 		} else {
-			embed := discordgo.MessageEmbed{
-				Title:       title,
-				Description: msg,
-			}
-			_, _ = s.ChannelMessageSendEmbed(m.ChannelID, &embed)
+			_, _ = s.ChannelMessageSend(m.ChannelID, message)
 		}
 	}
 }
@@ -187,15 +170,14 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 			req, err := http.NewRequestWithContext(resp_timeout, http.MethodPost, urls, body)
 			req.Header.Set("Content-Type", "application/json")
 			if err != nil {
-				title = cmdsplit[1] + "error"
+				title = cmdsplit[1] + " error"
 				msg = "Error Connecting To Microservice"
 				return title, msg
 			}
 			res, err := http.DefaultClient.Do(req)
 			if err != nil {
-				title = cmdsplit[1] + "error"
+				title = cmdsplit[1] + " error"
 				msg = "Timeout"
-				fmt.Println(err)
 				return title, msg
 			} else {
 				if res.StatusCode == 404 {

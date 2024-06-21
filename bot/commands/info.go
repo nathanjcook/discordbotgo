@@ -12,10 +12,10 @@ func Info() (string, string) {
 		MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
 	}
 	var names []string
-	msg := ""
+	msg := "\n"
 	dbconfig.DB.Model(&Microservice{}).Pluck("microservice_name", &names)
 	if len(names) > 0 {
-		title := "Info Command"
+		title := "Available Microservices"
 		for i := 0; i < len(names); i++ {
 			msg += "!gobot " + names[i] + " help\n\n"
 		}
