@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: excusems-deployment
+spec:
+  selector:
+    matchLabels:
+      app: excusems
+  template:
+    metadata:
+      labels:
+        app: excusems
+    spec:
+      containers:
+      - name: excusems
+        image: nathanjcook/excusems
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3001
