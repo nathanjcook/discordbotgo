@@ -1,4 +1,4 @@
-package main
+package migration
 
 import (
 	"os"
@@ -15,7 +15,7 @@ type Microservice struct {
 	MicroserviceTimeout int    `gorm:"column:microservice_timeout;size:4;"`
 }
 
-func main() {
+func BuildDB() {
 	// Find .env file
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")

@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nathanjcook/discordbotgo/bot"
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	migration "github.com/nathanjcook/discordbotgo/utils"
 	"go.uber.org/zap"
 )
 
@@ -20,6 +21,7 @@ func init() {
 			zap.L().Panic("Error loading .env file:", zap.Error(err))
 		}
 	}
+	migration.BuildDB()
 	// Connect to DB on app start up
 	dbconfig.Connect()
 }

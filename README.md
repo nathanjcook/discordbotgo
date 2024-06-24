@@ -17,7 +17,7 @@ To run the app locally follow these steps:
 
 1. Open a terminal or command prompt.
 2. npm install
-3. Run the following command:
+3. Run the following commands:
 
 ```
    export ENV=development
