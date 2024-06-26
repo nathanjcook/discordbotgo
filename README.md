@@ -4,7 +4,6 @@ Before running ensure go is installed:\
 Built on:
 - Go go1.22.3
 - Postgresql DB
-- Redis
 
 ## Installation
 
