@@ -43,7 +43,6 @@ func setupTestDBAdd() {
 		zap.L().Error("Error In DB AutoMigrate")
 		return
 	}
-
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {
