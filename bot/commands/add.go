@@ -68,6 +68,7 @@ func Add(name string, url string, timeout string) (string, string) {
 							if err != nil {
 								title = "Add Command Error"
 								msg = "Error Connecting To Database"
+								zap.L().Error("Error:", zap.Error(err))
 								return title, msg
 							} else {
 								title = "Add Command"
