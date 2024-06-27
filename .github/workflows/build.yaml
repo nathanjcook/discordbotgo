@@ -13,25 +13,26 @@ jobs:
 
     permissions:
       contents: read
-      packages: read
-      statuses: write
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Super-linter
-      uses: super-linter/super-linter@v6.6.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.22.3'
+
+
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: v1.59
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
 
     - name: Build
       run: go build -v ./...
