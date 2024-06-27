@@ -39,9 +39,8 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	result := db.AutoMigrate(&Microservice{})
-	if result.Error != nil {
-		zap.L().Error("Error loading .env file:", zap.Error(result))
+	if err := db.AutoMigrate(&Microservice{}).Error; err != nil {
+		zap.L().Error("Error In DB AutoMigrate")
 		return
 	}
 

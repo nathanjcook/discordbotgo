@@ -25,5 +25,8 @@ func BuildDB() {
 	}
 
 	dbconfig.Connect()
-	dbconfig.DB.AutoMigrate(&Microservice{})
+	if err := dbconfig.DB.AutoMigrate(&Microservice{}).Error; err != nil {
+		zap.L().Error("Error In DB AutoMigrate")
+		return
+	}
 }
