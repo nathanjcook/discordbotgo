@@ -39,7 +39,7 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	db.AutoMigrate(&Microservice{}) //nolint:all
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {

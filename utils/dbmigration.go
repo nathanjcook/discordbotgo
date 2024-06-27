@@ -25,5 +25,6 @@ func BuildDB() {
 	}
 
 	dbconfig.Connect()
-	dbconfig.DB.AutoMigrate(&Microservice{})
+
+	dbconfig.DB.AutoMigrate(&Microservice{}) //nolint:all
 }

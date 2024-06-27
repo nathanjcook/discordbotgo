@@ -38,7 +38,7 @@ func setupTestDBDelete() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	db.AutoMigrate(&Microservice{}) //nolint:all
 }
 
 func TestDeleteMockExist(t *testing.T) {

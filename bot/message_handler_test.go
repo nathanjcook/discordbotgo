@@ -39,7 +39,7 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	db.AutoMigrate(&Microservice{}) //nolint:all
 }
 func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")

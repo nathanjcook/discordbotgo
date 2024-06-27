@@ -59,6 +59,10 @@ func Start() {
 
 	// Shut down bot
 	fmt.Println("[INFO] Stopping shard manager...")
-	Mgr.Shutdown()
+	err = Mgr.Shutdown()
+	if err != nil {
+		fmt.Println("[ERROR] Error shutting down manager,", err)
+		return
+	}
 	fmt.Println("[SUCCESS] Shard manager stopped. Bot is shut down.")
 }
