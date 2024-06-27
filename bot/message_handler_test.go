@@ -1,10 +1,46 @@
 package bot
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"testing"
+
+	"github.com/joho/godotenv"
+	dbconfig "github.com/nathanjcook/discordbotgo/config"
+	"go.uber.org/zap"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
+func setupTestDBAdd() {
+	if os.Getenv("ENV") == "development" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			zap.L().Panic("Error loading .env file:", zap.Error(err))
+		}
+	}
+	host := os.Getenv("POSTGRES_HOST")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("DATABASE_NAME")
+	port := os.Getenv("POSTGRES_PORT")
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=UTC",
+		host,
+		user,
+		password,
+		dbname,
+		port)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database: " + err.Error())
+	}
+	dbconfig.DB = db
+
+	db.AutoMigrate(&Microservice{})
+}
 func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")
 	title, msg := Add_Handler(0, cmdsplit)
@@ -149,6 +185,7 @@ func TestAdd_HandlerNameTooLarge(t *testing.T) {
 }
 
 func TestAdd_HandlerNameBadUrl(t *testing.T) {
+	setupTestDBAdd()
 	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
@@ -164,6 +201,7 @@ func TestAdd_HandlerNameBadUrl(t *testing.T) {
 }
 
 func TestAdd_HandlerNameBadTimeOutFormat(t *testing.T) {
+	setupTestDBAdd()
 	cmdsplit := strings.Split("!gobot add tester http://localhost:3002 A", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 

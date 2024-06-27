@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/h2non/gock"
 	"github.com/joho/godotenv"
 	dbconfig "github.com/nathanjcook/discordbotgo/config"
 	"go.uber.org/zap"
@@ -91,6 +92,8 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 
 func TestAddSuccess(t *testing.T) {
 	setupTestDBAdd()
+	defer gock.Off()
+	gock.New("http://localhost:8081/api/help")
 
 	dbconfig.DB.Create(&Microservice{
 		MicroserviceName:    "testname_5",

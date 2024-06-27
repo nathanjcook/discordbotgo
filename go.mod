@@ -13,6 +13,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ewohltman/discordgo-mock v0.0.11 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/h2non/gock v1.2.0 // indirect
+	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx/v5 v5.6.0 // indirect
