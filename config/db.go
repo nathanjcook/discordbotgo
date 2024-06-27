@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,7 @@ import (
 var DB *gorm.DB
 
 func Connect() {
+
 	// Get env variable
 	host := os.Getenv("POSTGRES_HOST")
 	user := os.Getenv("POSTGRES_USER")
@@ -29,7 +31,7 @@ func Connect() {
 	// Connect to postgres with gorm
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		zap.L().Panic("Error loading .env file:", zap.Error(err))
 	} else {
 		DB = db
 	}
