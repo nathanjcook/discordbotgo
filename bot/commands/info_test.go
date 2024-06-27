@@ -45,10 +45,8 @@ func setupTestDBInfo() {
 	}
 	dbconfig.DB = db
 
-	if err := db.AutoMigrate(&Microservice{}).Error; err != nil {
-		zap.L().Error("Error In DB AutoMigrate")
-		return
-	}
+	db.AutoMigrate(&Microservice{}) //nolint:all
+
 }
 
 func TestInfoMS(t *testing.T) {

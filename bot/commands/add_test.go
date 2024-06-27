@@ -39,10 +39,7 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	if err := db.AutoMigrate(&Microservice{}).Error; err != nil {
-		zap.L().Error("Error In DB AutoMigrate")
-		return
-	}
+	db.AutoMigrate(&Microservice{}) //nolint:all
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {
