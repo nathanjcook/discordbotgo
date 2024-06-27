@@ -14,7 +14,7 @@ import (
 
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
-		err := godotenv.Load(".env")
+		err := godotenv.Load("../../.env")
 		if err != nil {
 			zap.L().Panic("Error loading .env file:", zap.Error(err))
 		}

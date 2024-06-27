@@ -208,10 +208,13 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 			//Adding optional headers application/json to allow json data to be parsed
 			req, err := http.NewRequestWithContext(resp_timeout, http.MethodPost, urls, body)
 			req.Header.Set("Content-Type", "application/json")
+			fmt.Println(err)
 			// Check And Handle Errors Whilst Making The Post Request
 			if err != nil {
 				title = cmdsplit[1] + " error"
 				msg = "Error Connecting To Microservice"
+				fmt.Println(err)
+				zap.L().Error("Error:", zap.Error(err))
 				return title, msg
 			}
 			// If response fails or exceeds the timeout context then return timeout message
