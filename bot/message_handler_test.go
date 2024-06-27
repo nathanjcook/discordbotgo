@@ -39,7 +39,11 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	result := db.AutoMigrate(&Microservice{})
+	if result.Error != nil {
+		zap.L().Error("Error loading .env file:", zap.Error(result))
+		return
+	}
 }
 func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")

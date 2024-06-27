@@ -39,7 +39,12 @@ func setupTestDBAdd() {
 	}
 	dbconfig.DB = db
 
-	db.AutoMigrate(&Microservice{})
+	result := db.AutoMigrate(&Microservice{})
+	if result.Error != nil {
+		zap.L().Error("Error loading .env file:", zap.Error(result))
+		return
+	}
+
 }
 
 func TestAddMSNameAlreadyExists(t *testing.T) {
