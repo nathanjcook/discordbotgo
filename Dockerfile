@@ -12,7 +12,7 @@ COPY . .
 RUN go build -o main .
 
 # Use image
-FROM alpine:latest
+FROM alpine:3.20
 # Create working directory
 WORKDIR /app
 # Copy built app
