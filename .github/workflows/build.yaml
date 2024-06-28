@@ -57,8 +57,17 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
+    - name: Test Bot Functionality
       run: go test -v ./bot
+      env:
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+        POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+        DATABASE_NAME: ${{ secrets.POSTGRES_DB }}
+
+    - name: Test Bot Commands
+      run: go test -v ./bot/commands
       env:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
