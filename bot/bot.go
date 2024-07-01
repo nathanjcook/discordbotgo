@@ -52,7 +52,7 @@ func Start() {
 	}
 
 	// Wait here until CTRL-C or other term signal is received.
-	fmt.Println("[SUCCESS] Bot is now running.1234  Press CTRL-C to exit.")
+	fmt.Println("[SUCCESS] Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
