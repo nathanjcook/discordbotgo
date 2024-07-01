@@ -43,6 +43,7 @@ func Start() {
 	Mgr.RegisterIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsGuilds | discordgo.IntentsMessageContent)
 
 	fmt.Println("[INFO] Starting shard manager...")
+	fmt.Println("Test")
 
 	// Start all of our shards and begin listening.
 	err = Mgr.Start()
