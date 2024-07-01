@@ -27,3 +27,20 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/discordbot:latest
+
+  deployment:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: 'Deploy'
+      uses: 'deler-aziz/helm-deploy-action@v1.0.0'
+      with:
+        release: 'discordbot'
+        namespace: 'nathan-namespace'
+        chart: 'app'
+        token: '${{ github.token }}'
+        version: '${{ github.sha }}'
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+
