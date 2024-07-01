@@ -43,3 +43,4 @@ jobs:
         version: '${{ github.sha }}'
       env:
         KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+
