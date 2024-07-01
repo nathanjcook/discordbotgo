@@ -38,7 +38,7 @@ jobs:
       with:
         release: 'discordbot'
         namespace: 'nathan-namespace'
-        chart: 'app'
+        chart: './helm-deploy'
         token: '${{ github.token }}'
         version: '${{ github.sha }}'
       env:
