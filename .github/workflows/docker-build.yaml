@@ -1,10 +1,10 @@
 name: DockerPush
-
+# Only run on merge into main
 on:
   push:
     branches:
       - 'main'
-
+# Build and push new docker image
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/discordbot:latest
-
+# After successful docker push, run helm upgrade
   deployment:
     needs: 'docker'
     runs-on: 'ubuntu-latest'
