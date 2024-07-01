@@ -36,7 +36,7 @@ jobs:
     - name: 'Deploy'
       uses: 'deler-aziz/helm-deploy-action@v1.0.0'
       with:
-        release: 'discordbot'
+        release: 'discordbot-release'
         namespace: 'nathan-namespace'
         chart: './helm-deploy'
         token: '${{ github.token }}'
