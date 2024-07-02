@@ -66,6 +66,7 @@ func Add(name string, url string, timeout string) (string, string) {
 								msg = "Error Connecting To Database"
 								return title, msg
 							} else {
+								title = "Add Command"
 								msg = "Microservice: " + name + " Added To Server"
 								return title, msg
 							}
