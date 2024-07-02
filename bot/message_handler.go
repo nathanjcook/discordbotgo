@@ -18,6 +18,7 @@ import (
 )
 
 var nl = "*** \n\n"
+var invalidArgCount = "Invalid Amount Of Args Provided"
 
 // Define Microservice Struct For GORM Database Intergration
 type Microservice struct {
@@ -111,7 +112,7 @@ func Add_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	var msg string
 	//Error prevention: Return Error Message If Admin Tries To Use Add Command With Less Than Or Greater Than Three Variables
 	if len(cmdsplit) < 5 || len(cmdsplit) > 6 {
-		msg = "Invalid Amount Of Args Provided"
+		msg = invalidArgCount
 		return title, msg
 	} else if adminCheck == 0 {
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Add Microservices
@@ -131,7 +132,7 @@ func Delete_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If Admin Tries To Use Delete Command With Less Than Or Greater Than One Variable
 	if len(cmdsplit) < 3 || len(cmdsplit) > 4 {
 		title := "Delete Command Error"
-		msg = "Invalid Amount Of Args Provided"
+		msg = invalidArgCount
 		return title, msg
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Delete Microservices
 	} else if adminCheck == 0 {
@@ -153,7 +154,7 @@ func Help_Handler(cmdsplit []string) (string, string, bool) {
 	//Error prevention: Return Error Message If User Tries To Use Help Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Help Command Error"
-		msg = "Invalid Amount Of Args Provided"
+		msg = invalidArgCount
 		return title, msg, is_help
 	} else {
 		is_help = true
@@ -168,7 +169,7 @@ func Info_Handler(cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If User Tries To Use Info Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Info Command Error"
-		msg = "Invalid Amount Of Args Provided"
+		msg = invalidArgCount
 		return title, msg
 	} else {
 		//Call Info Function
@@ -188,7 +189,7 @@ func Microservice_Handler(query Microservice, cmdsplit []string, messageContent 
 	//If User Only Inputs !gobot <microservice_name> then present error as endpoint is required
 	if len(cmdsplit) < 3 {
 		title = "Microservice Command Error"
-		msg = "Invalid Amount Of Args Provided"
+		msg = invalidArgCount
 		return title, msg
 	} else {
 		//Call Body_Parser Function To Convert messageContent[HTTP Request Body] into JSON Format
