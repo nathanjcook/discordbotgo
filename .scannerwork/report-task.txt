@@ -2,5 +2,5 @@ projectKey=discordbot-local
 serverUrl=http://localhost:9000
 serverVersion=10.6.0.92116
 dashboardUrl=http://localhost:9000/dashboard?id=discordbot-local
-ceTaskId=240fd275-b2f3-42bd-a5ac-2bbb7f9312d1
-ceTaskUrl=http://localhost:9000/api/ce/task?id=240fd275-b2f3-42bd-a5ac-2bbb7f9312d1
+ceTaskId=09c1917c-8e2b-43d4-98a4-2aeb8c24ea83
+ceTaskUrl=http://localhost:9000/api/ce/task?id=09c1917c-8e2b-43d4-98a4-2aeb8c24ea83

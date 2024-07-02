@@ -13,6 +13,14 @@ import (
 	"gorm.io/gorm"
 )
 
+var addCommand = "Add Command Error"
+var deleteCommand = "Delete Command Error"
+var argsCount = "Invalid Amount Of Args Provided"
+var want_msg string
+var errorMessage = "\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Wanted: %q, Recieved: %q"
+var internalCommands = "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+var multipleInputError = "\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Wanted: %q, Recieved: %q"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -45,8 +53,8 @@ func TestAdd_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55", " ")
 	title, msg := Add_Handler(0, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added"
+	want_title := addCommand
+	want_msg = "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added"
 
 	if want_title != title {
 		t.Errorf("\n\nOnly Admins Should Be Able To Add Microservices!\nIf This Fails Then This Suggests That The Add Command Is Accessible To Everyone\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -60,8 +68,8 @@ func TestDelete_HandlerNotAdmin(t *testing.T) {
 	cmdsplit := strings.Split("!gobot delete test", " ")
 	title, msg := Delete_Handler(0, cmdsplit)
 
-	want_title := "Delete Command Error"
-	want_msg := "Only Admins Can Delete MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Deleted"
+	want_title := deleteCommand
+	want_msg = "Only Admins Can Delete MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Deleted"
 
 	if want_title != title {
 		t.Errorf("\n\nOnly Admins Should Be Able To Delete Microservices!\nIf This Fails Then This Suggests That The Delete Command Is Accessible To Everyone\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -75,14 +83,14 @@ func TestAdd_HandlerTooManyValues(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test test 55 a b c d e f g", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_title := addCommand
+	want_msg := argsCount
 
 	if want_title != title {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(errorMessage, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(errorMessage, want_msg, msg)
 	}
 }
 
@@ -90,14 +98,14 @@ func TestDelete_HandlerTooManyValues(t *testing.T) {
 	cmdsplit := strings.Split("!gobot delete test test", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Delete Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_title := deleteCommand
+	want_msg := argsCount
 
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(errorMessage, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(errorMessage, want_msg, msg)
 	}
 }
 
@@ -106,17 +114,17 @@ func TestHelp_HandlerTooManyValues(t *testing.T) {
 	title, msg, is_help := Help_Handler(cmdsplit)
 
 	want_title := "Help Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_msg := argsCount
 	want_help := false
 
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(errorMessage, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(errorMessage, want_msg, msg)
 	}
 	if want_help != is_help {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %v, Msg Recieved: %v", want_help, is_help)
+		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Wanted: %v, Recieved: %v", want_help, is_help)
 	}
 }
 
@@ -125,7 +133,7 @@ func TestHelp_HandlerHelpNotReturned(t *testing.T) {
 	title, msg, is_help := Help_Handler(cmdsplit)
 
 	want_title := ""
-	want_msg := ""
+	want_msg = ""
 	want_help := true
 
 	if want_msg != title {
@@ -143,8 +151,8 @@ func TestAdd_HandlerTooFewValues(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_title := addCommand
+	want_msg := argsCount
 
 	if want_title != title {
 		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Few Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -158,14 +166,14 @@ func TestDelete_HandlerTooFewValues(t *testing.T) {
 	cmdsplit := strings.Split("!gobot delete", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Delete Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_title := deleteCommand
+	want_msg := argsCount
 
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(errorMessage, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting To Many Variables\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(errorMessage, want_msg, msg)
 	}
 }
 
@@ -173,8 +181,8 @@ func TestAdd_HandlerNameTooLarge(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa test 50", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be Larger Than 25 Characters"
+	want_title := addCommand
+	want_msg = "Microservice Name Cannot Be Larger Than 25 Characters"
 
 	if want_title != title {
 		t.Errorf("\n\nError: System Has Failed To Prevent User From Providing A Microservice_Name beyond the databases required size/length\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -189,8 +197,8 @@ func TestAdd_HandlerNameBadUrl(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add test nonexist_234232 50", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Error Connecting To Microservice"
+	want_title := addCommand
+	want_msg = "Error Connecting To Microservice"
 
 	if want_title != title {
 		t.Errorf("\n\nError: Suggests That System Is Providing User With Incorrect Error Code [If At All]\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -205,8 +213,8 @@ func TestAdd_HandlerNameBadTimeOutFormat(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add tester http://localhost:3002 A", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Timeout Is In An Incorrect Format"
+	want_title := addCommand
+	want_msg = "Timeout Is In An Incorrect Format"
 
 	if want_title != title {
 		t.Errorf("\n\nError: Suggests That Users Are Able To Input Non Interger Values In The Timeout Column\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
@@ -220,14 +228,14 @@ func TestAdd_HandlerUserTriesToAddAdd(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add add http://localhost:3002 60", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+	want_title := addCommand
+	want_msg = internalCommands
 
 	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(multipleInputError, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(multipleInputError, want_msg, msg)
 	}
 }
 
@@ -235,14 +243,14 @@ func TestAdd_HandlerUserTriesToAddDelete(t *testing.T) {
 	cmdsplit := strings.Split("!gobot add delete http://localhost:3002 60", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+	want_title := addCommand
+	want_msg = internalCommands
 
 	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(multipleInputError, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(multipleInputError, want_msg, msg)
 	}
 }
 
@@ -250,14 +258,14 @@ func TestAdd_HandlerUserTriesToAddHelp(t *testing.T) {
 	cmdsplit := strings.Split("!gobot help delete http://localhost:3002 60", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+	want_title := addCommand
+	want_msg = internalCommands
 
 	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(multipleInputError, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(multipleInputError, want_msg, msg)
 	}
 }
 
@@ -265,14 +273,14 @@ func TestAdd_HandlerUserTriesToAddInfo(t *testing.T) {
 	cmdsplit := strings.Split("!gobot help delete http://localhost:3002 60", " ")
 	title, msg := Add_Handler(123, cmdsplit)
 
-	want_title := "Add Command Error"
-	want_msg := "Microservice Name Cannot Be The Same As Internal Commands: add, delete, help, info"
+	want_title := addCommand
+	want_msg = internalCommands
 
 	if want_title != title {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)
+		t.Errorf(multipleInputError, want_title, title)
 	}
 	if want_msg != msg {
-		t.Errorf("\n\nError: Suggests That Users Can Add More Than One Add Command And Cause Multiple Commands To Run At Once\n\n Msg Wanted: %q, Msg Recieved: %q", want_msg, msg)
+		t.Errorf(multipleInputError, want_msg, msg)
 	}
 }
 
@@ -291,7 +299,7 @@ func TestMicroservice_HandlerTooFewValues(t *testing.T) {
 	title, msg := Microservice_Handler(QueryTest, cmdsplit, message_content_test)
 
 	want_title := "Microservice Command Error"
-	want_msg := "Invalid Amount Of Args Provided"
+	want_msg := argsCount
 
 	if want_title != title {
 		t.Errorf("\n\nError: System Has Failed To Prevent User From Inputting Using Microservice Without An Endpoint\n\n Title Wanted: %q, Title Recieved: %q", want_title, title)

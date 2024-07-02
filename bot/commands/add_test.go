@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var localhost = "http://localhost:8081"
+
 func setupTestDBAdd() {
 	if os.Getenv("ENV") == "development" {
 		err := godotenv.Load(".env")
@@ -51,7 +53,7 @@ func TestAddMSNameAlreadyExists(t *testing.T) {
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("existing_service", "http://localhost:8081", "50")
+	title, msg := Add("existing_service", localhost, "50")
 	title_want := "Add Command Error"
 	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
@@ -71,11 +73,11 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 
 	dbconfig.DB.Create(&Microservice{
 		MicroserviceName:    "existing_service",
-		MicroserviceUrl:     "http://localhost:8081",
+		MicroserviceUrl:     localhost,
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("new_service", "http://localhost:8081", "50")
+	title, msg := Add("new_service", localhost, "50")
 	title_want := "Add Command Error"
 	msg_want := "Microservice Name AND Microservice URL Must Be Unique"
 
@@ -93,7 +95,7 @@ func TestAddMSHostURLAlreadyExists(t *testing.T) {
 func TestAddSuccess(t *testing.T) {
 	setupTestDBAdd()
 	defer gock.Off()
-	gock.New("http://localhost:8081/api/help")
+	gock.New(localhost + "/api/help")
 
 	dbconfig.DB.Create(&Microservice{
 		MicroserviceName:    "testname_5",
@@ -101,7 +103,7 @@ func TestAddSuccess(t *testing.T) {
 		MicroserviceTimeout: 70,
 	})
 
-	title, msg := Add("New_service_test", "http://localhost:8081", "50")
+	title, msg := Add("New_service_test", localhost, "50")
 	title_want := "Add Command"
 	msg_want := "Microservice: New_service_test Added To Server"
 

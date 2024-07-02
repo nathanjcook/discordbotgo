@@ -17,6 +17,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var nl = "*** \n\n"
+
 // Define Microservice Struct For GORM Database Intergration
 type Microservice struct {
 	MicroserviceId      int    `gorm:"column:microservice_id;unique;primaryKey;autoIncrement"`
@@ -71,7 +73,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else if cmdsplit[1] == "info" {
 			//Call Function Info_Handler function With cmdsplit slice
 			title, msg = Info_Handler(cmdsplit)
-			message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+			message = "<@" + m.Author.ID + ">" + " " + "***" + title + nl + msg
 			//If Second Item In cmdsplit slice is equal to anything other than 'add' 'delete' 'info' 'help', assume user is trying to call microservice
 		} else {
 			//Perform SQL Query For Microservices Table Where Microservice_name is equal to the second word in the discord message/command
@@ -80,16 +82,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if host.RowsAffected < 1 {
 				titles, msg := commands.Info()
 				title = "Microservice " + cmdsplit[1] + " Does Not Exist"
-				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + "***" + titles + "***\n" + msg
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + nl + "***" + titles + "***\n" + msg
 			} else {
 				title, msg = Microservice_Handler(query, cmdsplit, messageContent)
-				message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+				message = "<@" + m.Author.ID + ">" + " " + "***" + title + nl + msg
 				//Discord Has a Limit oF 2000 Characters For Users And Bots.
 				//Will Return An Error Specifying That The HTTP Response Cannot Be Sent To Discord Chat Due To This Limit
 				if utf8.RuneCountInString(message) >= 2000 {
 					title := "Microservice " + cmdsplit[1] + " Error"
 					msg := "Response Exceeded 2000 Characters! Report This Microservice To An Admin To Review"
-					message = "<@" + m.Author.ID + ">" + " " + "***" + title + "*** \n\n" + msg
+					message = "<@" + m.Author.ID + ">" + " " + "***" + title + nl + msg
 				}
 
 			}
@@ -105,16 +107,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func Add_Handler(adminCheck int, cmdsplit []string) (string, string) {
-	var title string
+	var title = "Add Command Error"
 	var msg string
 	//Error prevention: Return Error Message If Admin Tries To Use Add Command With Less Than Or Greater Than Three Variables
 	if len(cmdsplit) < 5 || len(cmdsplit) > 6 {
-		title := "Add Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg = "Invalid Amount Of Args Provided"
 		return title, msg
 	} else if adminCheck == 0 {
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Add Microservices
-		title = "Add Command Error"
 		msg = "Only Admins Can Add MicroServices! Please Contact Any Administrators If You Want A Particular Microservice Added"
 		return title, msg
 	} else {
@@ -131,7 +131,7 @@ func Delete_Handler(adminCheck int, cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If Admin Tries To Use Delete Command With Less Than Or Greater Than One Variable
 	if len(cmdsplit) < 3 || len(cmdsplit) > 4 {
 		title := "Delete Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg = "Invalid Amount Of Args Provided"
 		return title, msg
 		//If User Is Not An Admin Then Return Error Message Identifying That Only Admins Can Delete Microservices
 	} else if adminCheck == 0 {
@@ -153,7 +153,7 @@ func Help_Handler(cmdsplit []string) (string, string, bool) {
 	//Error prevention: Return Error Message If User Tries To Use Help Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Help Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg = "Invalid Amount Of Args Provided"
 		return title, msg, is_help
 	} else {
 		is_help = true
@@ -168,7 +168,7 @@ func Info_Handler(cmdsplit []string) (string, string) {
 	//Error prevention: Return Error Message If User Tries To Use Info Command With Added Unnecessary Variables
 	if len(cmdsplit) > 2 {
 		title := "Info Command Error"
-		msg := "Invalid Amount Of Args Provided"
+		msg = "Invalid Amount Of Args Provided"
 		return title, msg
 	} else {
 		//Call Info Function
